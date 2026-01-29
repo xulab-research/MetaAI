@@ -1,15 +1,15 @@
-import os
 import pandas as pd
 from Bio import SeqIO
 from scipy.stats import zscore
 
 wt_seq = str(list(SeqIO.parse("../features/wt/result.fasta", "fasta"))[0].seq)
 
-file_name = "test"
+file_name = "20260119"
 data = pd.read_excel(f"{file_name}.xlsx", index_col=0)
 
 dup_list = []
 result = pd.DataFrame()
+
 for multi_mut_info in data.index:
     tmp_str = ""
     for single_mut_info in multi_mut_info.split(","):
@@ -18,6 +18,7 @@ for multi_mut_info in data.index:
         assert single_mut_info[0] != single_mut_info[-1]
         tmp_str += single_mut_info[0] + str(mut_pos) + single_mut_info[-1] + ","
     tmp_str = tmp_str[:-1]
+
     if len(data[data.index == multi_mut_info]) >= 2 and multi_mut_info not in dup_list:
         dup_list.append(multi_mut_info)
         print(data[data.index == multi_mut_info])
@@ -31,10 +32,6 @@ for multi_mut_info in data.index:
         mut_pos = int(single_mut_info[1:-1]) - 1
         mut_seq[mut_pos] = single_mut_info[-1]
     result.loc[tmp_str, "mut_seq"] = "".join(mut_seq)
-
-os.makedirs(f"../features/wt", exist_ok=True)
-with open(f"../features/wt/{tmp_str}/result.fasta", "w") as f:
-    f.write(">{}\n{}\n".format(tmp_str, result.loc[tmp_str, "mut_seq"]))
 
 result.index.name = "mut_name"
 result["wt_seq"] = wt_seq

@@ -17,7 +17,6 @@ def main(mut_counts: int):
 
     with open("../features/wt/result.fasta", "r") as f:
         wt_seq = "".join(line.strip() for line in f if line.strip() and not line.startswith(">")).upper()
-
     wt_idx = torch.tensor([AA_TO_IDX[c] for c in wt_seq], dtype=torch.long, device=device)
 
     esm_path = "../features/wt/esm2_650m_embedding.pt" if FEATURE_NAME == "esm2_650m" else "../features/wt/esmc_600m_embedding.pt" if FEATURE_NAME == "esmc_600m" else "../features/wt/esmc_300m_embedding.pt"
